@@ -5,6 +5,10 @@ import session from "cookie-session";
 import { config } from "./config/app.config";
 import connectDatabase from "./config/database.config";
 import { errorHandler } from "./middleware/errorHandler.middleware";
+import { asyncHandler } from "./middleware/asyncHandler.middleware";
+import { ErrorCodeEnum } from "./enums/error-code.enum";
+import { HTTPSTATUS } from "./config/http.config";
+import { BadRequestException } from "./utils/appError";
 
 const app = express();
 const BASE_PATH = config.BASE_PATH;
@@ -14,36 +18,40 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use(
-  session({
-    name: "session",
-    keys: [config.SESSION_SECRET],
-    maxAge: 24 * 60 * 60 * 1000,
-    secure: config.NODE_ENV === "production",
-    httpOnly: true,
-    sameSite: "lax",
-  })
+    session({
+        name: "session",
+        keys: [config.SESSION_SECRET],
+        maxAge: 24 * 60 * 60 * 1000,
+        secure: config.NODE_ENV === "production",
+        httpOnly: true,
+        sameSite: "lax",
+    })
 );
 
 app.use(
-  cors({
-    origin: config.FRONTEND_ORIGIN,
-    credentials: true,
-  })
+    cors({
+        origin: config.FRONTEND_ORIGIN,
+        credentials: true,
+    })
 );
 
 app.get(
-  `/`,
-  (async (req: Request, res: Response, next: NextFunction) => {
-    return res.status(200).json({
-      message: "Hello from Worknest Backend!",
-    });
-  })
+    `/`,
+    asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+        throw new BadRequestException(
+            "This is a bad request",
+            ErrorCodeEnum.AUTH_INVALID_TOKEN
+        );
+        return res.status(HTTPSTATUS.OK).json({
+            message: "Hello World",
+        });
+    })
 );
 
 app.use(errorHandler);
 
 
 app.listen(config.PORT, async () => {
-  console.log(`Server listening on port ${config.PORT} in ${config.NODE_ENV}`);
-  await connectDatabase();
+    console.log(`Server listening on port ${config.PORT} in ${config.NODE_ENV}`);
+    await connectDatabase();
 });

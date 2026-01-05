@@ -9,6 +9,9 @@ import { asyncHandler } from "./middleware/asyncHandler.middleware";
 import { ErrorCodeEnum } from "./enums/error-code.enum";
 import { HTTPSTATUS } from "./config/http.config";
 import { BadRequestException } from "./utils/appError";
+import authRoutes from "./routes/auth.route";
+import isAuthenticated from "./middleware/isAuthenticated.middleware";
+import userRoutes from "./routes/user.route";
 
 const app = express();
 const BASE_PATH = config.BASE_PATH;
@@ -47,6 +50,9 @@ app.get(
         });
     })
 );
+
+app.use(`${BASE_PATH}/auth`, authRoutes);
+app.use(`${BASE_PATH}/user`, isAuthenticated, userRoutes);
 
 app.use(errorHandler);
 

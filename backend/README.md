@@ -53,7 +53,7 @@ Create a `.env` file in the root of the backend folder and configure these varia
 ```plaintext  
 PORT=8000
 NODE_ENV=development
-MONGO_URI="mongodb+srv://<username>:<password>@<>.mongodb.net/teamsync_db"  
+MONGO_URI="mongodb+srv://<username>:<password>@<>.mongodb.net/worknest_db"  
 
 SESSION_SECRET="session_secret_key"
 
